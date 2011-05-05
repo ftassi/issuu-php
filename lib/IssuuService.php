@@ -5,7 +5,7 @@
  *
  * @author ftassi
  */
-class IssuService
+class IssuuService
 {
   /**
    *
