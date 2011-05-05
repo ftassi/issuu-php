@@ -28,7 +28,7 @@ class IssuuService
   public function documentUrlUpload($request, $response)
   {
     $this->httpClient->setUrl($this->config->getStandardEndpoint());
-    
+    $this->httpClient->addPostParameter('apiKey', $this->config->getApiKey());
     return $response;
   }
 }

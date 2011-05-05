@@ -1,7 +1,10 @@
 <?php
 
+set_include_path(dirname(__FILE__).'/../../lib/vendor'.PATH_SEPARATOR.get_include_path());
+
 require_once dirname(__FILE__) . '/../../lib/IssuuService.php';
 require_once dirname(__FILE__) . '/../../lib/IssuuConfigHandler.php';
+require_once 'HTTP/Request2.php';
 
 /**
  * Test class for IssuService.
@@ -35,13 +38,17 @@ class IssuuServiceTest extends PHPUnit_Framework_TestCase
 
   public function testSiginatureForProtectedMethod()
   {
-    $httpClient = $this->getMock('HTTP_Request2', array('setUrl'));
+    $httpClient = $this->getMock('HTTP_Request2');
 
     $httpClient
         ->expects($this->once())
         ->method('setUrl')
         ->with('http://api.issuu.com/1_0');
 
+    $httpClient->expects($this->any())
+        ->method('addPostParameter')
+        ->with('apiKey', 'fooApiKey');
+    
     $issuu = new IssuuService($httpClient, $this->getMockConfig());
 
     $request = new stdClass();
@@ -57,6 +64,10 @@ class IssuuServiceTest extends PHPUnit_Framework_TestCase
         ->expects($this->any())
         ->method('getStandardEndpoint')
         ->will($this->returnValue('http://api.issuu.com/1_0'));
+    $config
+        ->expects($this->any())
+        ->method('getApiKey')
+        ->will($this->returnValue('fooApiKey'));
     
     return $config;
   }

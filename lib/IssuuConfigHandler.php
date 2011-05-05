@@ -13,6 +13,7 @@
 abstract class IssuuConfigHandler
 {
   abstract public function getStandardEndpoint();
+  abstract public function getApiKey();
 }
 
 ?>
