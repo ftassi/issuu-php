@@ -1,10 +1,11 @@
 <?php
 
-set_include_path(dirname(__FILE__).'/../../lib/vendor'.PATH_SEPARATOR.get_include_path());
+set_include_path(dirname(__FILE__) . '/../../lib/vendor' . PATH_SEPARATOR . get_include_path());
 
 require_once dirname(__FILE__) . '/../../lib/IssuuService.php';
 require_once dirname(__FILE__) . '/../../lib/IssuuConfigHandler.php';
 require_once 'HTTP/Request2.php';
+require_once 'HTTP/Request2/Adapter/Mock.php';
 
 /**
  * Test class for IssuService.
@@ -24,7 +25,8 @@ class IssuuServiceTest extends PHPUnit_Framework_TestCase
    */
   protected function setUp()
   {
-    
+    $this->request = new stdClass();
+    $this->response = new stdClass();
   }
 
   /**
@@ -33,43 +35,96 @@ class IssuuServiceTest extends PHPUnit_Framework_TestCase
    */
   protected function tearDown()
   {
-    
   }
 
-  public function testSiginatureForProtectedMethod()
+  public function testDocumentUrlUpload()
   {
-    $httpClient = $this->getMock('HTTP_Request2');
-
-    $httpClient
-        ->expects($this->once())
-        ->method('setUrl')
-        ->with('http://api.issuu.com/1_0');
-
-    $httpClient->expects($this->any())
-        ->method('addPostParameter')
-        ->with('apiKey', 'fooApiKey');
+    $issuu = $this->getIssuuServiceClient($this->getValidResponse());
     
-    $issuu = new IssuuService($httpClient, $this->getMockConfig());
+    $result = $issuu->documentUrlUpload($this->request, $this->response);
 
-    $request = new stdClass();
-    $response = new stdClass();
-
-    $issuu->documentUrlUpload($request, $response);
+    $this->assertInstanceOf(get_class($this->response), $result);
   }
-
+  
+  public function testDocumentUrlException()
+  {
+    $issuu = $this->getIssuuServiceClient($this->getErrorResponse());
+    
+    try
+    {
+      $result = $issuu->documentUrlUpload($this->request, $this->response);
+    }
+    catch (Exception $e)
+    {
+      $this->assertEquals(200, $e->getCode());
+      $this->assertEquals('Required field is missing', $e->getMessage());
+      return;
+    }
+    $this->fail('An expected exception has not been raised.');
+  }
+  
+  protected function getIssuuServiceClient($httpResponse)
+  {
+    $config = $this->getMockConfig();
+    $httpClient = $this->getMockHttpClient($httpResponse);
+    return new IssuuService($httpClient, $config);
+  }
+  
   protected function getMockConfig()
   {
-    $config = $this->getMockForAbstractClass('IssuuConfigHandler');
-    $config
-        ->expects($this->any())
-        ->method('getStandardEndpoint')
-        ->will($this->returnValue('http://api.issuu.com/1_0'));
-    $config
-        ->expects($this->any())
-        ->method('getApiKey')
-        ->will($this->returnValue('fooApiKey'));
-    
-    return $config;
+    return new TestConfigHandler();
+  }
+
+  protected function getMockHttpClient($mockResponse)
+  {
+    $mockAdapter = new HTTP_Request2_Adapter_Mock();
+    $mockAdapter->addResponse($mockResponse);
+    $client = new HTTP_Request2();
+    $client->setAdapter($mockAdapter);
+    return $client;
+  }
+
+  protected function getValidResponse()
+  {
+    return <<<EOF
+HTTP/1.1 200 OK
+Connection: close
+Server: Yaws/1.77 Yet Another Web Server
+Cache-Control: no-cache
+Date: Wed, 18 May 2011 13:10:14 GMT
+Content-Length: 1054
+Content-Type: text/xml; charset=utf-8
+
+<rsp stat="ok"><document username="francescotassi" name="file" documentId="110518130228-fa5889c0a819472a992239988a4f9bdf" title="File di test 1305723745" access="public" state="A" orgDocType="pdf" orgDocName="http://dl.dropbox.com/u/2881323/file.pdf" downloadable="false" origin="apislurp" pro="F" rating="0.0" ratingsAllowed="true" commentCount="0" commentsAllowed="true" bookmarkCount="0" viewCount="0" pageCount="2" gfx="2" dcla="2|h|2|a4|p|595|842|0|0" ls="0" ep="1305723748" publishDate="2011-05-18T13:02:28.000Z" description="PREMESSA: • Premio percentuale del 20% su preventivi netti accettati da clienti acquisiti tramite il sito * Verrà inoltre effettuata una campagna di link popularity per promuovere il sito all’interno delle più importanti directory italiane, atta anche ad accrescerne il PR. 2) Per tutelare entrambe le parti il contratto avrà una durata di un anno e 6 mesi dalla firma dello NOTE: • ottimizzazione dei nomi dei file del sito; • corretta compilazione dei meta tag; "/></rsp>
+EOF;
+  }
+  protected function getErrorResponse()
+  {
+    return  <<<EOF
+HTTP/1.1 200 OK
+Connection: close
+Server: Yaws/1.77 Yet Another Web Server
+Cache-Control: no-cache
+Date: Wed, 18 May 2011 15:43:05 GMT
+Content-Length: 134
+Content-Type: text/xml; charset=utf-8
+
+<rsp stat="fail"><error code="200" message="Required field is missing" field="signature"/></rsp>
+EOF;
+  }
+
+}
+
+class TestConfigHandler extends IssuuConfigHandler
+{
+
+  public function getStandardEndpoint()
+  {
+    return 'http://api.issuu.com/1_0';
+  }
+
+  public function getApiKey()
+  {
   }
 
 }

@@ -25,11 +25,28 @@ class IssuuService
     $this->httpClient = $client;
   }
   
-  public function documentUrlUpload($request, $response)
+  public function documentUrlUpload($request,   $response)
   {
+    /* @var $httpResponse HTTP_Request2_Response */
     $this->httpClient->setUrl($this->config->getStandardEndpoint());
-    $this->httpClient->addPostParameter('apiKey', $this->config->getApiKey());
+    $httpResponse = $this->httpClient->send();
+    if ($httpResponse->getStatus() === 200)
+    {
+      $this->checkIssuuResponseStatus($httpResponse->getBody());
+    }
     return $response;
+  }
+  
+  protected function checkIssuuResponseStatus($responseMessage)
+  {
+    $xml = simplexml_load_string($responseMessage);
+    $statusCode = (string)$xml->attributes()->stat[0];
+    if ($statusCode == 'fail')
+    {
+      $errorCode = (integer)$xml->error[0]->attributes()->code[0];
+      $errorMessage = (string)$xml->error[0]->attributes()->message[0];
+      throw new Exception($errorMessage, $errorCode);
+    }
   }
 }
 
