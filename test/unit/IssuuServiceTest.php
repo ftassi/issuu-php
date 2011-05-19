@@ -133,6 +133,11 @@ class TestConfigHandler extends IssuuConfigHandler
   public function getApiKey()
   {
   }
+  
+  public function getSecret()
+  {
+    
+  }
 
 }
 
