@@ -31,7 +31,7 @@ class IssuuService
 
     $this->httpClient->setUrl($this->config->getStandardEndpoint());
 
-    $params = array();
+    $params = $request->getParameters();
     $params['action'] = 'issuu.document.url_upload';
     $params['apiKey'] = $this->config->getApiKey();
     $params['signature'] = $this->calculateSignature($params, 'mySecretKey');

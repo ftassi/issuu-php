@@ -29,7 +29,7 @@ class IssuuServiceTest extends PHPUnit_Framework_TestCase
   {
     $this->request = $this->getMock('IssuuRequest');
     $this->request
-        ->expects($this->any())
+        ->expects($this->atLeastOnce())
         ->method('getParameters')
         ->will($this->returnValue(array('fooParam' => 'fooValue')));
     
