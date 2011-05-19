@@ -1,5 +1,6 @@
 <?php
 
+require_once dirname(__FILE__) . '/../../lib/IssuuMessage.php';
 require_once dirname(__FILE__) . '/../../lib/IssuuRequest.php';
 
 /**
