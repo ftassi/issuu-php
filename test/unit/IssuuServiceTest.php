@@ -28,6 +28,11 @@ class IssuuServiceTest extends PHPUnit_Framework_TestCase
   protected function setUp()
   {
     $this->request = $this->getMock('IssuuRequest');
+    $this->request
+        ->expects($this->any())
+        ->method('getParameters')
+        ->will($this->returnValue(array('fooParam' => 'fooValue')));
+    
     $this->response = $this->getMock('IssuuResponse');
   }
 
