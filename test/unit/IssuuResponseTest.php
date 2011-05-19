@@ -42,6 +42,27 @@ class IssuuResponseTest extends PHPUnit_Framework_TestCase
     $this->assertEquals('fooValue2', $this->response['fooParam2']);
   }
 
+  public function testPopulateFromResponseBody()
+  {
+    $rsp = <<<EOF
+<rsp stat="ok"> 
+  <document username="lekkim" name="racing" documentId="090623122351-f691a27cfd744b80b25a2c8f5a51d596" title="fooDocumentTitle" access="public" state="P" category="012000" type="009000" origin="singleupload" pageCount="0" ep="1245759831" description="Race cars of Le Man 2009"> 
+    <tags> 
+      <tag value="cars"/> 
+      <tag value="le man"/> 
+      <tag value="racing"/> 
+    </tags> 
+    <folders> 
+      <folder id="3935f331-5d5b-4694-86ce-6f26c6dee809"/> 
+    </folders> 
+  </document> 
+</rsp>
+EOF;
+    $this->response->populateFromResponseBody($rsp);
+    
+    $this->assertEquals('090623122351-f691a27cfd744b80b25a2c8f5a51d596', $this->response['documentId']);
+    $this->assertEquals('fooDocumentTitle', $this->response['title']);
+  }
 }
 
 ?>

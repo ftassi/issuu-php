@@ -9,9 +9,15 @@
  *
  * @author ftassi
  */
-class IssuuResponse extends IssuuMessage 
+class IssuuResponse extends IssuuMessage
 {
-  //put your code here
+  public function populateFromResponseBody($body)
+  {
+    $xml = simplexml_load_string($body);
+    
+    $this->parameters['documentId'] = (string)$xml->document[0]->attributes()->documentId[0];
+    $this->parameters['title'] = (string)$xml->document[0]->attributes()->title[0];
+  }
 }
 
 ?>
