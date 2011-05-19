@@ -48,6 +48,7 @@ class IssuuService
       $this->checkIssuuResponseStatus($httpResponse->getBody());
     }
     
+    $response->populateFromResponseBody($httpResponse->getBody());
     return $response;
   }
 

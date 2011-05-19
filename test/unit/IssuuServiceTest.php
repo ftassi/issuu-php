@@ -33,7 +33,7 @@ class IssuuServiceTest extends PHPUnit_Framework_TestCase
         ->method('getParameters')
         ->will($this->returnValue(array('fooParam' => 'fooValue')));
     
-    $this->response = $this->getMock('IssuuResponse');
+    $this->response = $this->getMock('IssuuResponse', array('populateFromResponseBody'));
   }
 
   /**
@@ -46,6 +46,11 @@ class IssuuServiceTest extends PHPUnit_Framework_TestCase
 
   public function testDocumentUrlUpload()
   {
+    $this->response
+        ->expects($this->once())
+        ->method('populateFromResponseBody')
+        ->with('<rsp stat="ok"><document username="francescotassi" name="file" documentId="110518130228-fa5889c0a819472a992239988a4f9bdf" title="File di test 1305723745" access="public" state="A" orgDocType="pdf" orgDocName="http://dl.dropbox.com/u/2881323/file.pdf" downloadable="false" origin="apislurp" pro="F" rating="0.0" ratingsAllowed="true" commentCount="0" commentsAllowed="true" bookmarkCount="0" viewCount="0" pageCount="2" gfx="2" dcla="2|h|2|a4|p|595|842|0|0" ls="0" ep="1305723748" publishDate="2011-05-18T13:02:28.000Z" description="PREMESSA: • Premio percentuale del 20% su preventivi netti accettati da clienti acquisiti tramite il sito * Verrà inoltre effettuata una campagna di link popularity per promuovere il sito all’interno delle più importanti directory italiane, atta anche ad accrescerne il PR. 2) Per tutelare entrambe le parti il contratto avrà una durata di un anno e 6 mesi dalla firma dello NOTE: • ottimizzazione dei nomi dei file del sito; • corretta compilazione dei meta tag; "/></rsp>');
+    
     $issuu = $this->getIssuuServiceClient($this->getValidResponse());
     
     $result = $issuu->documentUrlUpload($this->request, $this->response);
