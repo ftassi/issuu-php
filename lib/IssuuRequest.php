@@ -10,38 +10,13 @@
  *
  * @author ftassi
  */
-class IssuuRequest implements ArrayAccess, Iterator
+class IssuuRequest implements ArrayAccess
 {
   /**
    *
    * @var array
    */
   protected $parameters;
-  
-  public function current()
-  {
-    
-  }
-  
-  public function rewind()
-  {
-    
-  }
-  
-  public function key()
-  {
-    
-  }
-  
-  public function next()
-  {
-    
-  }
-  
-  public function valid()
-  {
-    
-  }
   
   public function offsetExists($offset)
   {
