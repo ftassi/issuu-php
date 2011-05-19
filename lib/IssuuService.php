@@ -25,7 +25,7 @@ class IssuuService
     $this->httpClient = $client;
   }
   
-  public function documentUrlUpload($request,   $response)
+  public function documentUrlUpload(IssuuRequest $request, IssuuResponse $response)
   {
     /* @var $httpResponse HTTP_Request2_Response */
     $this->httpClient->setUrl($this->config->getStandardEndpoint());

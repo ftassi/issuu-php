@@ -4,6 +4,8 @@ set_include_path(dirname(__FILE__) . '/../../lib/vendor' . PATH_SEPARATOR . get_
 
 require_once dirname(__FILE__) . '/../../lib/IssuuService.php';
 require_once dirname(__FILE__) . '/../../lib/IssuuConfigHandler.php';
+require_once dirname(__FILE__) . '/../../lib/IssuuResponse.php';
+require_once dirname(__FILE__) . '/../../lib/IssuuRequest.php';
 require_once 'HTTP/Request2.php';
 require_once 'HTTP/Request2/Adapter/Mock.php';
 
@@ -25,8 +27,8 @@ class IssuuServiceTest extends PHPUnit_Framework_TestCase
    */
   protected function setUp()
   {
-    $this->request = new stdClass();
-    $this->response = new stdClass();
+    $this->request = $this->getMock('IssuuRequest');
+    $this->response = $this->getMock('IssuuResponse');
   }
 
   /**
