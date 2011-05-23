@@ -62,6 +62,8 @@ EOF;
     
     $this->assertEquals('090623122351-f691a27cfd744b80b25a2c8f5a51d596', $this->response['documentId']);
     $this->assertEquals('fooDocumentTitle', $this->response['title']);
+    $this->assertEquals('lekkim', $this->response['username']);
+    $this->assertEquals('racing', $this->response['name']);
   }
 }
 
